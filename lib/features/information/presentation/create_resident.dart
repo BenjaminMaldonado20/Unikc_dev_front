@@ -5,6 +5,7 @@ import 'package:unikc/features/user/presentation/create_register.dart';
 import 'package:unikc/features/user/presentation/edit_data.dart';
 import 'package:unikc/features/user/presentation/home.dart';
 
+// ignore: must_be_immutable
 class CreateResident extends StatelessWidget {
   double screenWidth = 0.0;
 
@@ -16,7 +17,7 @@ class CreateResident extends StatelessWidget {
 
     return MaterialApp(
       home: Scaffold(
-        backgroundColor: const Color.fromARGB(255, 255, 255, 231),
+        backgroundColor: Color.fromARGB(255, 255, 255, 255),
         appBar: AppBar(
           title: const Text(
             'Crear residente',
@@ -36,17 +37,18 @@ class CreateResident extends StatelessWidget {
             ),
           ),
           flexibleSpace: Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('lib/features/media/img/bg_appvar.png'),
-                fit: BoxFit.cover,
-              ),
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(30),
-                bottomRight: Radius.circular(30),
-              ),
-            ),
-          ),
+  decoration: BoxDecoration(
+    gradient: LinearGradient(
+      colors: [Colors.blue, Colors.white], // Puedes ajustar estos colores según tu preferencia
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+    ),
+    borderRadius: BorderRadius.only(
+      bottomLeft: Radius.circular(30),
+      bottomRight: Radius.circular(30),
+    ),
+  ),
+),
         ),
         drawer: Drawer(
           child: ListView(

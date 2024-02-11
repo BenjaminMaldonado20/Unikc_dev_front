@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:unikc/features/information/presentation/message.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Contact {
   final String name;
@@ -25,21 +25,7 @@ class _CallUserState extends State<CallUser> {
   FocusNode _searchFocusNode = FocusNode();
 
   List<Contact> contacts = [
-    Contact(name: 'Pacho', phoneNumber: '1101', isMobile: true),
-    Contact(name: 'Fernano Calderón', phoneNumber: '1101', isMobile: true),
-    Contact(name: 'Rodrigo Moreno', phoneNumber: '1102', isMobile: true),
-    Contact(name: 'Juan Álvarez', phoneNumber: '1102', isMobile: true),
-    Contact(name: 'Luis Acosta', phoneNumber: '1103', isMobile: true),
-    Contact(name: 'Julio Acosta', phoneNumber: '1103', isMobile: true),
-    Contact(name: 'Alci Acosta', phoneNumber: '10101', isMobile: true),
-    Contact(name: 'Abril Valdez', phoneNumber: '12121', isMobile: true),
-    Contact(name: 'Alfredo Bautista', phoneNumber: '10102', isMobile: true),
-    Contact(name: 'Sebastian Ramirez', phoneNumber: '101013', isMobile: true),
-    Contact(name: 'Benjamin Maldonado', phoneNumber: '10104', isMobile: true),
-    Contact(name: 'Pacho', phoneNumber: '1102', isMobile: true),
-    Contact(name: 'Pacho', phoneNumber: '1103', isMobile: true),
-    Contact(name: 'Pacho', phoneNumber: '1104', isMobile: true),
-    Contact(name: 'Pacho', phoneNumber: '1105', isMobile: true),
+    Contact(name: 'Pacho', phoneNumber: '+52 1 961 245 1155', isMobile: true),
     // Agrega otros contactos aquí
   ];
 
@@ -59,6 +45,39 @@ class _CallUserState extends State<CallUser> {
               contact.phoneNumber.contains(query))
           .toList();
     });
+  }
+
+  InkWell _buildPhoneCallButton(String phoneNumber, bool isMobile) {
+    return InkWell(
+      onTap: () {
+        _launchPhoneCall(phoneNumber);
+      },
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: Colors.green,
+        ),
+        child: Icon(
+          isMobile ? Icons.phone_android : Icons.phone,
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+
+  void _launchPhoneCall(String phoneNumber) async {
+    final Uri _phoneLaunchUri = Uri(
+      scheme: 'tel',
+      path: '+5219612451155',
+    );
+
+    if (await canLaunch(_phoneLaunchUri.toString())) {
+      await launch(_phoneLaunchUri.toString());
+    } else {
+      print('Error al lanzar la llamada');
+    }
   }
 
   @override
@@ -89,7 +108,10 @@ class _CallUserState extends State<CallUser> {
                 child: ListView.builder(
                   itemCount: filteredContacts.length,
                   itemBuilder: (context, index) {
-                    return ContactBlock(contact: filteredContacts[index]);
+                    return ContactBlock(
+                      contact: filteredContacts[index],
+                      buildPhoneCallButton: _buildPhoneCallButton,
+                    );
                   },
                 ),
               ),
@@ -159,8 +181,13 @@ class _CallUserState extends State<CallUser> {
 
 class ContactBlock extends StatelessWidget {
   final Contact contact;
+  final Function buildPhoneCallButton;
 
-  const ContactBlock({Key? key, required this.contact}) : super(key: key);
+  const ContactBlock({
+    Key? key,
+    required this.contact,
+    required this.buildPhoneCallButton,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -198,12 +225,7 @@ class ContactBlock extends StatelessWidget {
             children: [
               InkWell(
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const Message(),
-                    ),
-                  );
+                  // Acción para el botón de mensaje
                 },
                 borderRadius: BorderRadius.circular(15),
                 child: Container(
@@ -219,25 +241,17 @@ class ContactBlock extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              InkWell(
-                onTap: () {},
-                borderRadius: BorderRadius.circular(20),
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: Colors.green,
-                  ),
-                  child: Icon(
-                    contact.isMobile ? Icons.phone_android : Icons.phone,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
+              buildPhoneCallButton(contact.phoneNumber, contact.isMobile),
             ],
           ),
         ],
       ),
     );
   }
+}
+
+void main() {
+  runApp(MaterialApp(
+    home: CallUser(),
+  ));
 }
